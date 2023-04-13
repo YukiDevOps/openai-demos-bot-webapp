@@ -1,57 +1,57 @@
-# Simple Chatbot using Azure OpenAI service
+# Azure OpenAI service を使ったシンプルなチャットボット
 
 [![Build and deploy Node.js app to Azure Web App - openai-bot-webapp](https://github.com/michalmar/openai-demos-bot-webapp/actions/workflows/main_openai-bot-webapp.yml/badge.svg)](https://github.com/michalmar/openai-demos-bot-webapp/actions/workflows/main_openai-bot-webapp.yml)
 
-## UPDATE:
-> This repo now uses the `ChatGPT-turbo` model in Azure OpenAI service. Esssentially only Prompts slightly changed (due to the [ChatML](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/chatgpt?pivots=programming-language-chat-ml) syntax), rest of the code and logi remains. 
+## 更新情報:
+> このリポジトリでは、Azure OpenAI サービスの `ChatGPT-turbo` モデルが使用されるようになりました。基本的にはプロンプトのみがわずかに変更され([ChatML](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/chatgpt?pivots=programming-language-chat-ml)構文のため)、残りのコードとロジックは残ります。
 
-## Introduction
-Chatbots are computer programs that are used to create interaction between humans and computers. OpenAI `text-davinci` is a modern language model based on neural networks developed to understand human language. This article will focus on how to create an effective chatbot based on the [Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) `text-davinci` model.
+## 紹介
+チャットボットは、人間とコンピューターの間の相互作用を作成するために使用されるコンピュータープログラムです。OpenAI `text-davinci` は、人間の言語を理解するために開発されたニューラルネットワークに基づく最新の言語モデルです。この記事では、[Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) `text-davinci` モデルに基づいて効果的なチャットボットを作成する方法に焦点を当てます。
 
-In the OpenAI family, there are many models available today, which differ from each other in their focus (natural language, code, images), but also in complexity and what they can do. You can find a nice introduction and examples on [Azure Documentation ](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/concepts/models).
+OpenAI ファミリーには、現在利用可能な多くのモデルがあり、焦点(自然言語、コード、画像)だけでなく、複雑さと何ができるかも異なります。[Azure ドキュメント ](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/concepts/models)で素晴らしい紹介と例を見つけることもできます。
 
-## Target
+## 目標
 
-The goal is to create a simple chatbot using minimal effort, ie. we will use services and components that are already available with just a slight modification.
+目標は、最小限の労力でシンプルなチャットボットを作成することです。すでに利用可能なサービスとコンポーネントを、わずかな変更を加えるだけで使用します。
 
-**What components will such a chatbot have?**
+**チャットボットにはどのようなコンポーネントがありますか?
 
-Chat logic - the heart of a chatbot is the ability to respond to user input, questions and requests. It should understand what the user is asking, ask for additional information in case of ambiguity and provide (if possible the correct) answer. Here we will rely on the [Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) service.
+チャットロジック - チャットボットの心臓部は、ユーザーの入力、質問、リクエストに応答する機能です。ユーザーが何を求めているかを理解し、あいまいな場合は追加情報を求め、(可能であれば正しい)答えを提供する必要があります。ここでは、[Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) サービスに依存します。
 
-Front-end, or GUI, will most likely be a web application that mediates user communication with its own chatbot. However, often such a chatbot can have more than one such interface: part of the users communicates via the website, part can use a mobile app, and another part can, for example, communicate within the Teams platform. This means that the chatbot uses multiple channels without need to edit the bot for each channel separately.
+フロントエンド、またはGUIは、ほとんどの場合、独自のチャットボットとのユーザーコミュニケーションを仲介するWebアプリケーションです。ただし、多くの場合、このようなチャットボットは複数のそのようなインターフェイスを持つことができます:ユーザーの一部はWebサイトを介して通信し、一部はモバイルアプリを使用し、別の部分は、たとえば、Teamsプラットフォーム内で通信できます。これは、チャットボットがチャネルごとに個別にボットを編集することなく、複数のチャネルを使用することを意味します。
 
-Communication through channels will be provided by [Azure Bot Service](https://azure.microsoft.com/en-us/products/bot-services/#features), which can expose and manage communication with different channels (Web/Direct, Teams , but perhaps also Email, SMS, Slack, etc. - more [here](https://learn.microsoft.com/en-us/azure/bot-service/bot-service-channels-reference?view=azure-bot-service-4.0))
+チャネルを介した通信は [Azure Bot Service](https://azure.microsoft.com/en-us/products/bot-services/#features) によって提供され、さまざまなチャネル (Web/Direct、Teams だけでなく、LINE、電子メール、SMS、Slack など。 [詳細はこちら](https://learn.microsoft.com/en-us/azure/bot-service/bot-service-channels-reference?view=azure-bot-service-4.0)) との通信を公開および管理できます。
 
-Services and tools used:
-- Azure OpenAI - the heart / logic of the chatbot
-- Azure App Service (Web App) - GUI exposure and chatbot hosting
-- Azure Bot Service - a service for managing communication through various channels
+使用しているサービスとツール:
+- Azure OpenAI - チャットボットの心臓部/ロジック
+- Azure App Service (Web App) - GUI の公開とチャットボットのホスティング
+- Azure Bot Service - さまざまなチャネルを介した通信を管理するためのサービス
 
-## Architecture / Solution design
+## アーキテクチャ/ソリューション設計
 
 ```mermaid
 graph TD;
-webapp(Web UI & Bot\n hosting) -- query --> bot;
-bot((Bot Service)) -- response --> webapp;
-bot <-->  oai(OpenAI service);
+webapp(Web UI & Bot\n ホスティング) -- クエリ --> ボット;
+ボット((Bot Service)) -- 応答 --> webapp;
+ボット <-->  oai(OpenAI service);
 
 ```
 
-## Implementation
+## 実装
 
-The procedure is simple. We will make maximum use of prepared templates and examples.
+手順は簡単です。用意されたテンプレートやサンプルを最大限活用します。
 
-### Creation of OpenAI service
+### OpenAI Service の作成
 
-In the first step, we will create an OpenAI service - for this you need to [fill in the form](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu). As part of this service, we have access to the Azure OpenAI studio, where we can start by selecting and deploying the model - `text-davinci-003`, which is a GPT3.5 model. At the same time, it offers the option of a "playground" where you can test models and try your own prompts.
+最初のステップでは、OpenAIサービスを作成します-このためには、[フォームに記入](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu)する必要があります。このサービスの一環として、Azure OpenAI Studio にアクセスして、GPT3.5 モデルである `gpt-35-turbo` モデルを選択してデプロイすることから始めることができます。同時に、モデルと独自のプロンプトをテストすることができる「Play Ground」のオプションを提供します。
 
 ![azure openai playground](./docs/img/oai-playground.png)
 
-### Creating a chatbot - editing the code
+### チャットボットの作成 - コードの編集
 
-The second step is to create your own bot within the Bot Framework, or we will start from a template for a simple web chatbot - [echo bot](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/typescript_nodejs/02.echo-bot). I chose JavaScript/TypeScript, but you can also find an example for Python or C#.
+2番目のステップは、ボットフレームワーク内に独自のボットを作成することです、または単純なWebチャットボットのテンプレートから始めます - [echo bot](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/typescript_nodejs/02.echo-bot)。私はJavaScript/TypeScriptを選びましたが、PythonやC#の例もあります。
 
-In the `bot.ts` file you can see the chat application's own logic, we will focus on the `onMessage` method, which reacts to the arrival of a message from the user.
+チャットアプリケーション独自のロジックを確認できる`bot.ts`ファイルでは、ユーザーからのメッセージの到着に反応する`onMessage`メソッドに焦点を当てます。
 
 ```javascript
 this.onMessage(async (context, next) => {
@@ -62,7 +62,8 @@ this.onMessage(async (context, next) => {
 });
 ```
 
-We modify this method in such a way that we send the user input (query or command) in the variable `context.activity.text` to the OpenAI service to get the answer and subsequently use the answer from OpenAI in the answer to the user (`data.choices[0].text `):
+このメソッドを変更して、変数 `context.activity.text` のユーザー入力 (クエリまたはコマンド) を OpenAI Service 
+に送信して回答を取得し、その後、OpenAI からの回答をユーザーへの回答 (`data.choices[0].text `) で使用するようにします。
 
 ```javascript
 this.onMessage(async (context, next) => {
@@ -83,16 +84,16 @@ this.onMessage(async (context, next) => {
 });
 ```
 
-But this does not make the chatbot we probably would like have - we are missing two basic features:
-- chatbot personality - prompt
-- preserving the context of the communication
+しかし、これは私たちがおそらく望むチャットボットではありません - 2つの基本的な機能を欠いています:
+- チャットボットパーソナリティ - プロンプト
+- コミュニケーションのコンテキストを保持する
 
-**How to achieve that?**
+**それを達成する方法は?**
 
-Working with OpenAI text models mainly consists of correct setting and tuning of the prompt (more [here](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/completions)). We will use this prompt for our chatbot:
+OpenAIテキストモデルの操作は、主にプロンプトの正しい設定と調整で構成されます(詳細は[こちら](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/completions))。チャットボットにこのプロンプトを使用します：
 
 ```
-As an advanced chatbot, your primary goal is to assist users to the best of your ability. This may involve answering questions, providing helpful information, or completing tasks based on user input. In order to effectively assist users, it is important to be detailed and thorough in your responses. Use examples and evidence to support your points and justify your recommendations or solutions.
+高度なチャットボットとしての主な目標は、ユーザーの能力を最大限に発揮できるようにすることです。これには、質問への回答、役立つ情報の提供、またはユーザー入力に基づくタスクの完了が含まれる場合があります。ユーザーを効果的に支援するためには、詳細かつ徹底した対応が重要です。例と証拠を使用して、ポイントを裏付け、推奨事項や解決策を正当化します。
 
 <conversation history>
 
@@ -100,25 +101,24 @@ User: <user input>
 Chatbot:
 ```
 
-> ChatGPT version:
+> ChatGPT バージョン:
 > ```
-> <|im_start|>system As an advanced chatbot, your primary goal is to assist users to the best of your ability. This may involve answering questions, providing helpful information, or completing tasks based on user input. In order to effectively assist users, it is important to be detailed and thorough in your responses. Use examples and evidence to support your points and justify your recommendations or solutions.<|im_end|>
+> <|im_start|>system 高度なチャットボットとしての主な目標は、ユーザーの能力を最大限に発揮できるようにすることです。これには、質問への回答、役立つ情報の提供、またはユーザー入力に基づくタスクの完了が含まれる場合があります。ユーザーを効果的に支援するためには、詳細かつ徹底した対応が重要です。例と証拠を使用して、ポイントを裏付け、推奨事項や解決策を正当化します。<|im_end|>
 >
 ><conversation history>
 >
 ><|im_start|>user <user input><|im_end|>
 >
-><|im_start|>assistant`
-```
-
-In the first part, there is an instruction on how the model will behave to the entered text - giving answers including examples to support decision-making, completion. This is where personality tuning may appear as well, for example: behave professionally or firendly etc.
-
-Then the following section `<conversation history>` holds the history of the conversation and we gradually adding the the input and output of the chatbot. This part is important so that the chat bot correctly understands the context of the communication.
-
-Next is `User: <user input>`, for which we will add the user input.
+><|im_start|>assistant
 
 
-The entire function can then look like this:
+最初の部分では、モデルが入力されたテキストに対してどのように動作するかについての指示があります - 意思決定、補完をサポートするための例を含む答えを与えます。これは、パーソナリティチューニングも現れる可能性がある場所です、例えば:専門的または激しく振る舞うなどです。
+
+次に、次のセクション `<conversation history>` は会話の履歴を保持し、チャットボットの入力と出力を徐々に追加します。この部分は、チャットボットが通信のコンテキストを正しく理解するために重要です。
+
+次は `User: <user input>` で、ユーザー入力を追加します。
+
+関数全体は次のようになります:
 
 ```javascript
 this.onMessage(async (context, next) => {
@@ -150,28 +150,28 @@ this.onMessage(async (context, next) => {
 });
 ```
 
-We can test such a chatbot locally in [Bot Framework Emulator](https://github.com/microsoft/BotFramework-Emulator):
+このようなチャットボットは、[Bot Framework Emulator](https://github.com/microsoft/BotFramework-Emulator)でローカルでテストできます:
 
 ![bot framework emulator](./docs/img/bot-emu1.png)
 
-### Deployment do Azure
+### Azure へのデプロイ
 
-After we have tested that the chatbot listens to us and responds in the local environment, we can proceed to the next step, which is deployment to Azure. We are doing this for two reasons:
+チャットボットがローカル環境でリッスンして応答することをテストしたら、次の手順である Azure へのデプロイに進むことができます。これは2つの理由で行っています。
 
-1. we need the service to be accessible from anywhere
-1. we want to be able to run our chatbot on multiple channels
+1.どこからでもサービスにアクセスできる必要があります
+1.チャットボットを複数のチャネルで実行できるようにしたい
 
-In case we use [VS Code](https://code.visualstudio.com/) for development (which I highly recommend), we can use the extension for working with Azure Web App for the (1-click) deployment itself.
+開発に[VS Code](https://code.visualstudio.com/)を使用する場合(強くお勧めします)、(1クリック)デプロイ自体にAzure WebAppを操作するための拡張機能を使用できます。
 
 ![vscode](./docs/img/vscode.png)
 
-This is good for one-time testing, for easier iterative development I recommend using the [automatic deployment to Azure Web App using GitHub Actions](https://learn.microsoft.com/en-us/azure/app-service/deploy-continuous- deployment?tabs=github).
+これは1回限りのテストに適していますが、反復開発を容易にするために、[GitHubアクションを使用したAzure Webアプリへの自動デプロイ](https://learn.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment?tabs=github)を使用することをお勧めします。
 
-### Configure Azure / Bot Service
+### Azure / Bot Service を構成する
 
-The bot itself (the engine) is now already hosted in Azure - all we have to do is expose it using the [Azure Bot Service](https://portal.azure.com/#create/Microsoft.AzureBot) to access multiple channels without the need to change the code.
+ボット自体(エンジン)はすでにAzureでホストされています - コードを変更することなく、[Azure Bot Service](https://portal.azure.com/#create/Microsoft.AzureBot)を使用してボットを公開するだけで、複数のチャネルにアクセスできます。
 
-Just enter the URL of the web application created in the previous step into the Bot service settings - such a URL is the FQDN of the given application plus `api/messages`, i.e. looks something like this:
+前の手順で作成したWebアプリケーションのURLをボットサービス設定に入力するだけです-そのようなURLは、指定されたアプリケーションのFQDNに `api/messages` を加えたものです。
 
 ```url
 https://YOUR-WEB-APP.azurewebsites.net/api/messages
@@ -179,25 +179,24 @@ https://YOUR-WEB-APP.azurewebsites.net/api/messages
 
 ![bot service](./docs/img/bot-service.png)
 
-If everything was correct, we can directly test the service in Web Chat within the bot service directly on the Azure Portal:
+すべてが正しければ、Azure ポータルの Bot Service 内の Web チャットでサービスを直接テストできます:
 
 ![web chat test](./docs/img/bot-service-test.png)
 
-This gave us access to several channels: Web Chat, Microsoft Teams, Facebook Messenger, Slack, Twilio SMS,... (full list [here](https://learn.microsoft.com/en-us/azure/ bot-service/bot-service-channels-reference?view=azure-bot-service-4.0))
+これにより、Webチャット、Microsoft Teams、フェイスブックメッセンジャー、LINE、Slack、Twilio SMSなど、いくつかのチャンネルにアクセスできるようになりました,...(完全なリストは  [ここ](https://learn.microsoft.com/en-us/azure/bot-service/bot-service-channels-reference?view=azure-bot-service-4.0)にあります)
 
+### フロントエンド / Webアプリケーション
 
-### Front-end / Web application
-
-Now that the chatbot works for us and is deployed in Azure, we can test the most common integrations into the website. The easiest option is that you can generate an integration using an `iframe` and then just insert this code into your HTML page.
+チャットボットが機能し、Azure にデプロイされたので、Web サイトへの最も一般的な統合をテストできます。最も簡単なオプションは、「iframe」を使用して統合を生成し、このコードをHTMLページに挿入することです。
 
 ```html
 <iframe src='https://webchat.botframework.com/embed/YOUR-BOT-NAME?s=YOUR_SECRET_HERE'  style='min-width: 400px; width: 100%; min-height: 500px;'>
 </iframe>
 ```
 
-Another option is to directly use WebChat integration into the page - more [here](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-webchat-overview?view=azure-bot-service-4.0) and the source is at: [https://github.com/microsoft/BotFramework-WebChat](https://github.com/microsoft/BotFramework-WebChat/tree/main/samples/01.getting-started/a.full-bundle).
+別のオプションは、ページへのWebChat統合を直接使用することです-詳細は[ここ](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-webchat-overview?view=azure-bot-service-4.0)にあり、ソースは[https://github.com/microsoft/BotFramework-WebChat](https://github.com/microsoft/BotFramework-WebChat/tree/main/samples/01.getting-started/a.full-bundle) にあります。
 
-In short, these are JS libraries that allow simple integration and other customizations:
+簡単に言えば、これらは簡単な統合やその他のカスタマイズを可能にするJSライブラリです:
 
 ```html
 <!DOCTYPE html>
@@ -220,26 +219,30 @@ In short, these are JS libraries that allow simple integration and other customi
 </html>
 ```
 
-Where `YOUR_DIRECT_LINE_TOKEN` is the token for direct line communication within the Bot Service and `YOUR_USER_ID` is your chosen identification
+ここで、 `YOUR_DIRECT_LINE_TOKEN` はボットサービス内のDirect Line通信のトークンであり、`YOUR_USER_ID` は選択したIDです（訳註：現在コード内には無し）。
 
 ![direct line token](./docs/img/direct-line.png)
 
-> Important!: When configuring the Web app it is a best practice (proabaly security must) to not to use your tokens/passwords directly in your code but use them as web application environmental variables / application settings. In fact, we use in our example (in this repo) four such variables you would need to setup / fill to make you application communicate correctly:
+> 重要: Webアプリケーションを構成するときは、トークン/パスワードをコードで直接使用せず、Webアプリケーションの環境変数/アプリケーション設定として使用することがベストプラクティスです(通常セキュリティが必要なため)。実際、この例(このリポジトリ)では、アプリケーションが正しく通信するために設定/入力する必要がある6つの変数を使用しています：
 >
-> `DIRECT_LINE_TOKEN`... setting from the Bot Service channel
+> `DIRECT_LINE_TOKEN`...ボット サービス チャネルからの設定
 >
-> `OPENAI_API_KEY`...key for authentication to your Azure OpenAI service
+> `OPENAI_API_KEY`...Azure OpenAI Service への認証のためのキー
+>
+> Azure リソースへの認証のために Bot Service を作成するときに使用される `MicrosoftAppId` と `MicrosoftAppPassword` (独自のサービス プリンシパルを使用することも、既定値のままにすることもできます - 詳細は [こちら](https://learn.microsoft.com/en-us/azure/bot-service/provision-and-publish-a-bot?view=azure-bot-service-4.0&tabs=userassigned%2Ccsharp#plan-your-deployment))
+>
+> `AOAI_ENDPOINT`...Azure OpenAI Serviceのエンドポイント
 > 
-> `MicrosoftAppId` and `MicrosoftAppPassword` used when creating Bot Service for autentication to Azure resources (you can use your own Service Principal or leave default - more [here](https://learn.microsoft.com/en-us/azure/bot-service/provision-and-publish-a-bot?view=azure-bot-service-4.0&tabs=userassigned%2Ccsharp#plan-your-deployment))
+> `GPT_MODEL_NAME`...Azure OpenAI Serviceで使用するGPT-3.5 Turboのモデル名
 
-Such a page then contains our just-prepared chatbot. The WebChat framework offers a lot of customization options, so you can change almost anything from colors to the display of chat member indicators - more [here](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-webchat-customization?view=azure-bot-service-4.0).
+このページには、準備したばかりのチャットボットが含まれています。WebChat フレームワークには多くのカスタマイズ オプションが用意されているため、色からチャット メンバー インジケーターの表示まで、ほとんど何でも変更できます - 詳細は [こちら](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-webchat-customization?view=azure-bot-service-4.0)。
 
-So our chatbot can look like this:
+チャットボットの外観は以下のようになります:
 
 ![web app chat bot](./docs/img/webapp-final-en.png)
 
-## Conclusion
+## まとめ
 
-This was a demonstration of how to create a simple chatbot that knows the answer to almost any question :-) because it uses the powerful model `text-davinci-003` from the Azure OpenAI service.
+これは、Azure OpenAI サービスの強力なモデル `gpt-35-turbo` を使用しており、ほぼすべての質問に対する答えを知っている単純なチャットボットを作成する方法のデモンストレーションでした :-)
 
-You can try it yourself if you want! The full source code is available on my GitHub: [https://github.com/michalmar/openai-demos-bot-webapp](https://github.com/michalmar/openai-demos-bot-webapp). In order to use the Azure OpenAI service, you must first request access - [form](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu).
+必要に応じて自分で試すことができます！オリジナルの完全なソースコードは以下のGitHubで入手できます: [https://github.com/michalmar/openai-demos-bot-webapp](https://github.com/michalmar/openai-demos-bot-webapp)。Azure OpenAI Service を使用するには、まずアクセスを要求する必要があります - [フォーム](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu)。
