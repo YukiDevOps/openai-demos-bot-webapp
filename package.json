@@ -18,7 +18,7 @@
         "url": "https://github.com"
     },
     "dependencies": {
-        "botbuilder": "~4.17.0",
+        "botbuilder": "^4.19.3",
         "dotenv": "^8.2.0",
         "replace": "^1.2.0",
         "restify": "^11.1.0"
@@ -29,6 +29,6 @@
         "@types/restify": "8.4.2",
         "nodemon": "~2.0.4",
         "tslint": "~6.1.2",
-        "typescript": "~4.3.2"
+        "typescript": "^5.0.3"
     }
 }
