@@ -65,13 +65,13 @@ adapter.onTurnError = onTurnErrorHandler;
 const myBot = new EchoBot();
 
 // Listen for incoming requests.
-server.post('/api/messages', async (req, res) => {
+server.post('/api/messages', async (req, res, next) => {
     // Route received a request to adapter for processing
     await adapter.process(req, res, (context) => myBot.run(context));
 });
 
 // Listen for HTTP request on /
-server.get('/', (req, res) => {
+server.get('/', (req, res, next) => {
     // res.send('Hello World!');
 
     // display basic html page
