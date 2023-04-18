@@ -22,14 +22,20 @@ import {
 
 // This bot's main dialog.
 import { EchoBot } from './bot';
+import { aoaiParam } from './global';
+
+// Declare a global variable to store the reference to the adapter.
+const aoaiParamVar = new aoaiParam();
+let aoaitoken = aoaiParamVar.getToken();
+let aoaitemp = aoaiParamVar.getTemp();
 
 // Create HTTP server.
 const server = restify.createServer();
 server.use(restify.plugins.bodyParser());
 server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log(`\n${server.name} listening to ${server.url}`);
-    console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
-    console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
+    console.log('\nBot Framework Emulatorは次のURLからダウンロードしてください: https://aka.ms/botframework-emulator');
+    console.log('\nボットと会話するには、エミュレーターを開いて "Open Bot" を選択してください');
 });
 
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(process.env as ConfigurationBotFrameworkAuthenticationOptions);
@@ -54,8 +60,8 @@ const onTurnErrorHandler = async (context, error) => {
     );
 
     // Send a message to the user
-    await context.sendActivity('The bot encountered an error or bug.');
-    await context.sendActivity('To continue to run this bot, please fix the bot source code.');
+    await context.sendActivity('ボット内でエラーまたはバグが発生しました。');
+    await context.sendActivity('ボットを実行するには、ボットのソースコードを修正してください。');
 };
 
 // Set the onTurnError for the singleton CloudAdapter.
@@ -115,7 +121,7 @@ server.get('/', (req, res, next) => {
   <body>
     
     <h1><img src='https://logos-world.net/wp-content/uploads/2021/02/Microsoft-Azure-Emblem.png' height="40">Azure OpenAI - ChatGPT</h1>
-    <pre>version 20230321 | model: ChatGPT (turbo) | max_tokens: 1500 | temperature: 0.7 | Speech input enabled: false | Speech language: N/A</pre> 
+    <pre>version 20230321 | model: ChatGPT (turbo) | max_tokens: ${aoaitoken} | temperature: ${aoaitemp} | Speech input enabled: false | Speech language: N/A</pre> 
     <div style="" id="webchat" role="main"></div>
     <script>
       // Set  the CSS rules.
@@ -168,7 +174,7 @@ server.get('/', (req, res, next) => {
       window.WebChat.renderWebChat(
         {
           directLine: window.WebChat.createDirectLine({
-            token: '` + process.env.DIRECT_LINE_TOKEN + `'
+            token: '` + process.env.BOT_DIRECT_LINE_TOKEN + `'
           }),
           styleSet, styleOptions: avatarOptions
         },

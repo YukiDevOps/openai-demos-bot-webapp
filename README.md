@@ -8,7 +8,7 @@
 ## 紹介
 チャットボットは、人間とコンピューターの間の相互作用を作成するために使用されるコンピュータープログラムです。OpenAI `gpt-35-turbo` は、人間の言語を理解するために開発されたニューラルネットワークに基づく最新の言語モデルです。この記事では、[Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) `gpt-35-turbo` モデルに基づいて効果的なチャットボットを作成する方法に焦点を当てます。
 
-OpenAI ファミリーには、現在利用可能な多くのモデルがあり、焦点(自然言語、コード、画像)だけでなく、複雑さと何ができるかも異なります。[Azure ドキュメント ](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/concepts/models)で素晴らしい紹介と例を見つけることもできます。
+OpenAI ファミリーには、現在利用可能な多くのモデルがあり、フォーカス(自然言語、コード、画像)だけでなく、複雑さと何ができるかも異なります。[Azure ドキュメント ](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/concepts/models)で素晴らしい紹介と例を見つけることもできます。
 
 ## 目標
 
@@ -33,7 +33,7 @@ OpenAI ファミリーには、現在利用可能な多くのモデルがあり�
 graph TD;
 webapp(Web UI & Bot\n ホスティング) -- クエリ --> ボット;
 ボット((Bot Service)) -- 応答 --> webapp;
-ボット <-->  oai(OpenAI service);
+ボット <-->  AOAI(OpenAI service);
 
 ```
 
@@ -103,7 +103,7 @@ Chatbot:
 
 > ChatGPT バージョン:
 > ```
-> <|im_start|>system 高度なチャットボットとしての主な目標は、ユーザーの能力を最大限に発揮できるようにすることです。これには、質問への回答、役立つ情報の提供、またはユーザー入力に基づくタスクの完了が含まれる場合があります。ユーザーを効果的に支援するためには、詳細かつ徹底した対応が重要です。例と証拠を使用して、ポイントを裏付け、推奨事項や解決策を正当化します。<|im_end|>
+> <|im_start|>system 高度なチャットボットとしての主な目標は、ユーザーの能力を最大限に発揮できるようにすることです。これには、質問への回答、役立つ情報の提供、またはユーザー入力に基づくタスクの補完が含まれる場合があります。ユーザーを効果的に支援するためには、詳細かつ徹底した対応が重要です。例と証拠を使用して、ポイントを裏付け、正当な推奨事項や解決策を提示します。<|im_end|>
 >
 ><conversation history>
 >
@@ -225,15 +225,25 @@ https://YOUR-WEB-APP.azurewebsites.net/api/messages
 
 > 重要: Webアプリケーションを構成するときは、トークン/パスワードをコードで直接使用せず、Webアプリケーションの環境変数/アプリケーション設定として使用することがベストプラクティスです(通常セキュリティが必要なため)。実際、この例(このリポジトリ)では、アプリケーションが正しく通信するために設定/入力する必要がある6つの変数を使用しています：
 >
-> `DIRECT_LINE_TOKEN`...ボット サービス チャネルからの設定
+> `BOT_DIRECT_LINE_TOKEN`...ボット サービス チャネルからの設定
 >
-> `OPENAI_API_KEY`...Azure OpenAI Service への認証のためのキー
+> `AOAI_API_KEY`...Azure OpenAI Service への認証のためのキー
 >
 > Azure リソースへの認証のために Bot Service を作成するときに使用される `MicrosoftAppId` と `MicrosoftAppPassword` (独自のサービス プリンシパルを使用することも、既定値のままにすることもできます - 詳細は [こちら](https://learn.microsoft.com/en-us/azure/bot-service/provision-and-publish-a-bot?view=azure-bot-service-4.0&tabs=userassigned%2Ccsharp#plan-your-deployment))
 >
 > `AOAI_ENDPOINT`...Azure OpenAI Serviceのエンドポイント
 > 
-> `GPT_MODEL_NAME`...Azure OpenAI Serviceで使用するGPT-3.5 Turboのモデル名
+> `AOAI_MODEL_NAME`...Azure OpenAI Serviceで使用するGPT-3.5 Turboのモデル名
+>
+> 以下はオプション：
+>
+> `AOAI_TOKEN`...Azure OpenAI Service で使用できる最大トークン数（デフォルトは1500）
+>
+> `AOAI_TEMP`...Azure OpenAI Service からの回答の安定度（デフォルトは0.7）
+> 
+> `AOAI_SYSTEM`...Azure OpenAI Service ChatGPTの役割を決める文言を入力します
+>
+> `BOT_MESSAGE`...ボットがはじめに出力するメッセージ
 
 このページには、準備したばかりのチャットボットが含まれています。WebChat フレームワークには多くのカスタマイズ オプションが用意されているため、色からチャット メンバー インジケーターの表示まで、ほとんど何でも変更できます - 詳細は [こちら](https://learn.microsoft.com/en-us/azure/bot-service/bot-builder-webchat-customization?view=azure-bot-service-4.0)。
 
