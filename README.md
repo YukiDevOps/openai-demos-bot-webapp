@@ -219,7 +219,7 @@ https://YOUR-WEB-APP.azurewebsites.net/api/messages
 </html>
 ```
 
-ここで、 `YOUR_DIRECT_LINE_TOKEN` はボットサービス内のDirect Line通信のトークンであり、`YOUR_USER_ID` は選択したIDです（訳註：現在コード内には無し）。
+ここで、 `BOT_DIRECT_LINE_TOKEN` はボットサービス内のDirect Line通信のトークンであり、`YOUR_USER_ID` は選択したIDです（訳註：`YOUR_USER_ID`は現在コード内には無し）。
 
 ![direct line token](./docs/img/direct-line.png)
 

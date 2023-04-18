@@ -1,16 +1,16 @@
 // global.ts
 export class aoaiParam {
-    private token;
-    private temp;
+    private token: number;
+    private temp: number;
   
     constructor() {
         if (typeof process.env.AOAI_TOKEN !== 'undefined') {
-            this.token = process.env.AOAI_TOKEN;
+            this.token = Number(process.env.AOAI_TOKEN);
         } else {
             this.token = 1500;
         }
         if (typeof process.env.AOAI_TEMP !== 'undefined') {
-            this.temp = process.env.AOAI_TEMP;
+            this.temp = Number(process.env.AOAI_TEMP);
         } else {
             this.temp = 0.7;
         }

@@ -62,7 +62,7 @@ export class EchoBot extends ActivityHandler {
         } else {
             throw new Error(`Some of variables AOAI_ENDPOINT, AOAI_MODEL_NAME, AOAI_API_KEY is not defined.`);
         }
-        const url = `${originurl}openai/deployments/${model}/completions?api-version=2022-12-01`;
+        const url = `${originurl}openai/deployments/${model}/completions?api-version=2023-03-15-preview`;
  
         let conversation_history = "";
 
@@ -73,6 +73,7 @@ export class EchoBot extends ActivityHandler {
         };
 
         async function postDataToEndpoint(url: string, requestBody: RequestBody, headers: AxiosRequestHeaders): Promise<OpenAiResponse> {
+            console.log("requestBody: " + JSON.stringify(requestBody), "headers: " + JSON.stringify(headers), "url: " + url);
             try {
               const response: AxiosResponse = await axios.post(url, requestBody, {headers});
               return response.data;
