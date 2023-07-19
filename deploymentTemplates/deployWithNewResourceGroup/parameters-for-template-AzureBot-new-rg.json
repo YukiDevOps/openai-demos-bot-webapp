@@ -3,13 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "groupName": {
-      "value": ""
+      "value": "azure-bot-w-openai-dev"
     },
     "groupLocation": {
-      "value": ""
+      "value": "japaneast"
     },
     "azureBotId": {
-      "value": ""
+      "value": "azure-bot-w-openai-dev"
     },
     "azureBotSku": {
       "value": "S1"
@@ -24,7 +24,7 @@
       "value": "MultiTenant"
     },
     "appId": {
-      "value": ""
+      "value": "0d48bd81-291f-4a4b-9a94-0e90e8b5e6d8"
     },
     "UMSIName": {
       "value": ""
