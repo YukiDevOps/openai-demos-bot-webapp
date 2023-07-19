@@ -32,7 +32,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'openai-bot-webapp'
-          slot-name: 'Production'
+          slot-name: 'azure-bot-w-openai-dev'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CDB9A1062AFD49BDB0CC1E437A78B3E2 }}
           package: .
 
